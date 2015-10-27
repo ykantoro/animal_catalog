@@ -1,0 +1,261 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href='{{url_for('static',filename='styles.css')}}'>
+</head>
+<body>
+    <div>
+        {% if loggedin['username'] %}
+		        <span class="login">Logged in as {{loggedin['username']}}
+						<a href = "{{url_for('gdisconnect')}}">Log Out</a></span>
+				{% elif not loggedin['username'] %}
+		        <a href="{{url_for('showLogin')}}">Log In</a>
+		    {% endif %}
+    </div>
+
+    <div class='flash'>
+        {% with messages = get_flashed_messages() %}
+        	{% if messages %}
+		        <ul>
+		            {% for message in messages %}
+		            <li> <strong> {{ message }} </strong> </li>
+		            {% endfor %}
+		        </ul>
+        	{% endif %}
+        {% endwith %}
+
+    </div>
+
+    <div id="{{species.id}}" class="spec">
+        <a class="back" href="{{url_for('showSpecies')}}">
+            << Back to All</a>
+                <h4 class="anim">{{species.name}}</h4>
+                <script>
+                    document.getElementById("{{species.id}}").style.backgroundImage =
+                        "url('{{species.picture}}')";
+
+                </script>
+    </div>
+
+    <div>
+        <figure class="creator"> <img src="{{user.picture}}" width="100" height="100">
+            <figcaption><b>Creator</b>
+                <br> {{user.name}}</figcaption>
+        </figure>
+    </div>
+
+
+    {% if loggedin['user_id'] == species.user_id %}
+
+    <div class="add">
+
+        <a class="edits" href="javascript:void(0)" onclick="document.getElementById('editspecies').style.display='block';document.getElementById('fade').style.display='block'">
+				Edit Species
+			</a>
+        <div id="editspecies" class="white_content">
+            <div>
+                <a class="close" href="javascript:void(0)" onclick="document.getElementById('editspecies').style.display='none';document.getElementById('fade').style.display='none'">Close
+							</a>
+                <h1>Edit {{species.name}}</h1>
+            </div>
+
+            <div>
+                <form action="{{ url_for('showSpecies')}}" method="post">
+                    <div class="pop">
+                        <input type="hidden" name="edit" value="{{species.id}}" />
+                        <input type="hidden" name="new" value="" />
+                        <input type="hidden" name="delete" value="" />
+                        <p>
+                            <label for="name">Name:</label>
+                            <input type="text" name="nameedit" placeholder="{{species.name }}">
+                        </p>
+                        <p>
+                            <label for="picture">Picture:</label>
+                            <input type="text" name="pictureedit" placeholder="{{species.picture}}">
+                        </p>
+                        <button type="submit" type="submit">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="fade" class="black_overlay"></div>
+        |
+
+        <a class="edits" href="javascript:void(0)" onclick="document.getElementById('newanimal').style.display='block';document.getElementById('fade').style.display='block'">
+					Add Animal
+			</a>
+        <div id="newanimal" class="white_content">
+            <div>
+                <a class="close" href="javascript:void(0)" onclick="document.getElementById('newanimal').style.display='none';document.getElementById('fade').style.display='none'">Close
+							</a>
+                <h1>Create new animal in {{species.name}}</h1>
+            </div>
+            <div>
+                <form action="#" method="post">
+                    <div class="pop">
+                        <input type="hidden" name="newanim" value="{{species.id}}" />
+                        <input type="hidden" name="editanim" value="" />
+                        <input type="hidden" name="deleteanim" value="" />
+
+                        <p>
+                            <label for="name">Name:</label>
+                            <input type="text" maxlength="250" name="name" placeholder="Name of the animal">
+                        </p>
+                        <p>
+                            <label for="description">Description:</label>
+                            <input type="text" maxlength="250" name="description" placeholder="Description of the animal"></input>
+                        </p>
+                        <p>
+                            <label for="name">Picture:</label>
+                            <input type="text" maxlength="250" name="picture" placeholder="Picture URL">
+                        </p>
+                        <p>
+                            <label for="weight">Weight:</label>
+                            <input type="text" maxlength="250" name="weight" placeholder="How much does the animal weigh?">
+                        </p>
+                        <p>
+                            <label for="color">Color:</label>
+                            <input type="text" maxlength="250" name="color" placeholder="What is the typical color of the animal?">
+                        </p>
+                        <p>
+                            <label for="food">Food:</label>
+                            <input type="text" maxlength="250" name="food" placeholder="What does the animal eat?">
+                        </p>
+                        <p>
+                            <label for="sleep">Sleep:</label>
+                            <input type="text" maxlength="250" name="sleep" placeholder="How long does the animal sleep?">
+                        </p>
+
+                        <button type="submit">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="fade" class="black_overlay"></div>
+        |
+
+        <a class="edits" href="javascript:void(0)" onclick="document.getElementById('deletespecies').style.display='block';document.getElementById('fade').style.display='block'">
+					Delete Species
+			</a>
+        <div id="deletespecies" class="white_content">
+            <a class="close" href="javascript:void(0)" onclick="document.getElementById('deletespecies').style.display='none';document.getElementById('fade').style.display='none'">Close
+						</a>
+            <h1> Are you sure you want to delete {{species.name}}? </h1>
+            <div class="pop">
+                <form action="{{url_for('showSpecies')}}" method='post'>
+                    <input type="hidden" name="delete" value="{{species.id}}" />
+                    <input type="hidden" name="edit" value="" />
+                    <input type="hidden" name="new" value="" />
+                    <button type="submit">Delete</button>
+                </form>
+            </div>
+        </div>
+        <div id="fade" class="black_overlay"></div>
+    </div>
+    {% endif %} {% if animals !=[] %}
+    <div>
+        {% for i in animals %}
+        <div class="animalitem">
+
+            <div id="animal_{{i.id}}" class="animal_img">
+                <script>
+                    document.getElementById("animal_{{i.id}}").style.backgroundImage =
+                        "url('{{i.picture}}')";
+
+                </script>
+            </div>
+            <h3>{{i.name}}</h3>
+            <p class="desc">{{i.description}}</p>
+            <ul>
+                <li><b>Weight:</b> {{i.weight}}</li>
+                <li><b>Color:</b> {{i.color}}</li>
+                <li><b>Food:</b> {{i.food}}</li>
+                <li><b>Sleep:</b> {{i.sleep}}</li>
+            </ul>
+            {% if loggedin['user_id'] == species.user_id %}
+
+            <a href="javascript:void(0)" onclick="document.getElementById('animaledit').style.display='block';document.getElementById('fade').style.display='block'">Edit</a>            |
+
+            <a href="javascript:void(0)" onclick="document.getElementById('animaldelete').style.display='block';document.getElementById('fade').style.display='block'">
+								Delete</a>
+
+            <div id="animaledit" class="white_content">
+                <div>
+                    <a class="close" href="javascript:void(0)" onclick="document.getElementById('animaledit').style.display='none';document.getElementById('fade').style.display='none'">Close</a>
+                    <h1>Edit {{i.name}}</h1>
+                </div>
+
+                <div>
+                    <form action="#" method="post">
+                        <div class="forms">
+                            <input type="hidden" name="editanim" value="{{i.id}}" />
+                            <input type="hidden" name="newanim" value="" />
+                            <input type="hidden" name="deleteanim" value="" />
+
+                            <p>
+                                <label for="name">Name:</label>
+                                <input type="text" maxlength="250" name="nameedit" placeholder="{{i.name}}">
+
+                                <p>
+                                    <label for="description">Description:</label>
+                                    <input type="text" maxlength="250" name="descriptionedit" placeholder="{{i.description}}">
+                                </p>
+
+                                <p>
+                                    <label for="name">Picture:</label>
+                                    <input type="text" maxlength="250" name="pictureedit" placeholder="{{i.picture }}">
+                                </p>
+
+                                <p>
+                                    <label for="weight">Weight:</label>
+                                    <input type="text" maxlength="250" name="weightedit" placeholder="{{i.weight}}">
+                                </p>
+
+                                <p>
+                                    <label for="color">Color:</label>
+                                    <input type="text" maxlength="250" name="coloredit" placeholder="{{i.color}}">
+                                </p>
+
+                                <p>
+                                    <label for="food">Food:</label>
+                                    <input type="text" maxlength="250" name="foodedit" placeholder="{{i.food}}">
+                                </p>
+
+                                <p>
+                                    <label for="sleep">Sleep:</label>
+                                    <input type="text" maxlength="250" name="sleepedit" placeholder="{{i.sleep}}">
+                                </p>
+
+                                <button type="submit" type="submit">
+                                    Edit
+                                </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div id="fade" class="black_overlay"></div>
+
+            <div id="animaldelete" class="white_content">
+                <div>
+                    <a class="close" href="javascript:void(0)" onclick="document.getElementById('animaldelete').style.display='none';document.getElementById('fade').style.display='none'">Close</a>
+                    <h1>Delete {{i.name}}?</h1>
+                </div>
+
+                <form action="#" method="post">
+                    <div class="forms">
+                        <input type="hidden" name="deleteanim" value="{{i.id}}" />
+                        <input type="hidden" name="newanim" value="" />
+                        <input type="hidden" name="editanim" value="" />
+                        <button type="submit" type="submit">
+                            Delete
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div id="fade" class="black_overlay"></div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</body>
+</html>

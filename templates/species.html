@@ -1,0 +1,69 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href='{{url_for('static',filename='styles.css')}}'>
+</head>
+<body>
+	<div>
+	    {% if loggedin['username'] %}
+	    <span class="login">Logged in as {{loggedin['username']}}
+			<a href = "{{url_for('gdisconnect')}}">Log Out</a></span>
+			{% elif not loggedin['username'] %}
+	    <a href="{{url_for('showLogin')}}">Log In</a>
+	    {% endif %}
+	</div>
+	<div class='flash'>
+	    {% with messages = get_flashed_messages() %}
+	    	{% if messages %}
+			    <ul>
+			        {% for message in messages %}
+			        <li> <strong> {{ message }} </strong> </li>
+			        {% endfor %}
+			    </ul>
+	    	{% endif %}
+	    {% endwith %}
+	</div>
+
+	<h1>Animal Types</h1>
+	{% if loggedin['username'] %}
+		<div class="add" id="top">
+
+		    <a class="edits" href="javascript:void(0)" onclick="document.getElementById('addspecies').style.display='block';document.getElementById('fade').style.display='block'">
+					Add Species
+					</a>
+		</div>
+		<div id="addspecies" class="white_content">
+		    <a class="close" href="javascript:void(0)" onclick="document.getElementById('addspecies').style.display='none';document.getElementById('fade').style.display='none'">Close</a>
+		    <h1>Add a new species</h1>
+		    <form action="#" method="post">
+		        <div class="pop">
+		            <input type="hidden" name="new" value="new" />
+		            <p>
+		                <label for="name">Name:</label>
+		                <input type="text" maxlength="100" name="name" placeholder="Name of Species">
+		            </p>
+		            <p>
+		                <label for="picture">Picture:</label>
+		                <input type="text" maxlength="100" name="picture" placeholder="Img URL">
+		            </p>
+		            <button type="submit" id="submit" type="submit">Create</button>
+		        </div>
+		    </form>
+		</div>
+		<div id="fade" class="black_overlay"></div>
+	{% endif %}
+	{% for specie in species %}
+		<div id="{{specie.id}}" class="spec">
+		    <a href="{{url_for('showAnimal', species_id = specie.id)}}">
+
+		        <h4>{{specie.name}}</h4>
+		        <script>
+		            document.getElementById("{{specie.id}}").style.backgroundImage =
+		                "url('{{specie.picture}}')";
+
+		        </script>
+
+		    </a>
+		</div>
+	{% endfor %}
+</body>
+</html>
